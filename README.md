@@ -14,4 +14,4 @@ Time Complexities of every algorithm(listed above) is also included.
 ---
 
 # Getting Started
-* Clone this repo and run `./Sort` [for linux only]
+* Clone this repo and run `./Sort` [for linux] or `.\Sort.exe` [for windows]
