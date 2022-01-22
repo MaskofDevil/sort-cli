@@ -10,8 +10,11 @@ Currently listed sorting algorithms:
 
 Time Complexities of every algorithm(listed above) is also included.
 
-![sort-cli](https://user-images.githubusercontent.com/66861616/150527854-3a174784-9b8a-471e-94ce-f5edb7a83212.png)
+![sort-cli-ss](https://user-images.githubusercontent.com/66861616/150634481-e00e6276-4617-4407-9a75-020d69460571.png)
+
 ---
 
 # Getting Started
 * Clone this repo and run `./Sort` [for linux] or `.\Sort.exe` [for windows]
+
+### ⭐ Star this repo
