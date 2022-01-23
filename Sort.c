@@ -10,6 +10,7 @@ void selection_sort(int a[], int n);
 void bubble_sort(int a[], int n);
 void quick_sort(int a[], int l, int h);
 void merge_sort(int a[], int l, int h);
+void heap_sort(int a[], int n);
 
 int main(void)
 {
@@ -17,7 +18,6 @@ int main(void)
     printf("        _            _            _         _\n       / /\\         /\\ \\         /\\ \\      /\\ \\\n      / /  \\       /  \\ \\       /  \\ \\     \\_\\ \\\n     / / /\\ \\__   / /\\ \\ \\     / /\\ \\ \\    /\\__ \\\n    / / /\\ \\___\\ / / /\\ \\ \\   / / /\\ \\_\\  / /_ \\ \\\n    \\ \\ \\ \\/___// / /  \\ \\_\\ / / /_/ / / / / /\\ \\ \\\n     \\ \\ \\     / / /   / / // / /__\\/ / / / /  \\/_/\n _    \\ \\ \\   / / /   / / // / /_____/ / / /\n/_/\\__/ / /  / / /___/ / // / /\\ \\ \\  / / /\n\\ \\/___/ /  / / /____\\/ // / /  \\ \\ \\/_/ /\n \\_____\\/   \\/_________/ \\/_/    \\_\\/\\_\\/\n");
     reset_color();
 
-    // REVIEW
     short int type;
     do
     {
@@ -115,7 +115,8 @@ int main(void)
         case 5: print_complexity(5, 3, 1);
             merge_sort(arr, 0, n - 1);
             break;
-        case 6: printf("Heap Sort\n");
+        case 6: print_complexity(5, 3, 1);
+            heap_sort(arr, n);
             break;
         default: printf("Something unexpected happened\n");
             break;
@@ -305,5 +306,40 @@ void merge_sort(int a[], int l, int h)
         merge_sort(a, l, mid);
         merge_sort(a, mid + 1, h);
         merge(a, l, mid, h);
+    }
+}
+
+void heapify(int a[], int n, int p)
+{
+    int large = p, l = 2 * p + 1, r = 2 * p + 2;
+
+    if (l < n && a[l] > a[large])
+    {
+        large = l;
+    }
+
+    if (r < n && a[r] > a[large])
+    {
+        large = r;
+    }
+
+    if (large != p)
+    {
+        swap(&a[p], &a[large]);
+        heapify(a, n, large);
+    }
+}
+
+void heap_sort(int a[], int n)
+{
+    for (int i = n / 2 - 1; i >= 0; i--)
+    {
+        heapify(a, n, i);
+    }
+
+    for (int i = n - 1; i >= 0; i--)
+    {
+        swap(&a[0], &a[i]);
+        heapify(a, i, 0);
     }
 }
