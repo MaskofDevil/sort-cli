@@ -6,7 +6,7 @@ Currently listed sorting algorithms:
   3. Bubble Sort
   4. Quick Sort
   5. Merge Sort
-  6. Heap Sort (Upcoming)
+  6. Heap Sort
 
 Time Complexities of every algorithm(listed above) is also included.
 
@@ -16,5 +16,6 @@ Time Complexities of every algorithm(listed above) is also included.
 
 # Getting Started
 * Clone this repo and run `./Sort` [for linux] or `.\Sort.exe` [for windows]
+* If you have gcc or clang installed then compile and run the Sort.c file
 
 ### ⭐ Star this repo
