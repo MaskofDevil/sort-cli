@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
+
+#define VSIZE 20
+#define VMAX_HEIGHT 20
+#define VDELAY 100000
  
 void color(int c);
 void reset_color();
@@ -11,6 +16,7 @@ void bubble_sort(int a[], int n);
 void quick_sort(int a[], int l, int h);
 void merge_sort(int a[], int l, int h);
 void heap_sort(int a[], int n);
+void visual_sort_menu(int arr[], int n);
 
 int main(void)
 {
@@ -18,6 +24,7 @@ int main(void)
     printf("        _            _            _         _\n       / /\\         /\\ \\         /\\ \\      /\\ \\\n      / /  \\       /  \\ \\       /  \\ \\     \\_\\ \\\n     / / /\\ \\__   / /\\ \\ \\     / /\\ \\ \\    /\\__ \\\n    / / /\\ \\___\\ / / /\\ \\ \\   / / /\\ \\_\\  / /_ \\ \\\n    \\ \\ \\ \\/___// / /  \\ \\_\\ / / /_/ / / / / /\\ \\ \\\n     \\ \\ \\     / / /   / / // / /__\\/ / / / /  \\/_/\n _    \\ \\ \\   / / /   / / // / /_____/ / / /\n/_/\\__/ / /  / / /___/ / // / /\\ \\ \\  / / /\n\\ \\/___/ /  / / /____\\/ // / /  \\ \\ \\/_/ /\n \\_____\\/   \\/_________/ \\/_/    \\_\\/\\_\\/\n");
     reset_color();
 
+    // REVIEW
     short int type;
     do
     {
@@ -91,12 +98,14 @@ int main(void)
         printf("Press 5: Merge Sort\n");
         color(1);
         printf("Press 6: Heap Sort\n");
+        color(7);
+        printf("Press 7: Visual Sort\n"); // <-- Add this line
         reset_color();
         printf("-----------------------\n");
         printf("Choose sorting algorithm: ");
         scanf("%hd", &sort_algorithm);
     }
-    while (sort_algorithm < 0 || sort_algorithm > 6);
+    while (sort_algorithm < 0 || sort_algorithm > 7);
 
     switch (sort_algorithm)
     {
@@ -118,6 +127,10 @@ int main(void)
         case 6: print_complexity(5, 3, 1);
             heap_sort(arr, n);
             break;
+        case 7:
+            visual_sort_menu(arr, n); // Pass arr and n
+            free(arr);
+            return 0;
         default: printf("Something unexpected happened\n");
             break;
     }
@@ -341,5 +354,221 @@ void heap_sort(int a[], int n)
     {
         swap(&a[0], &a[i]);
         heapify(a, i, 0);
+    }
+}
+
+void v_clear_screen() {
+    printf("\033[H\033[J");
+}
+
+void v_draw_vertical_bars(int arr[], int n, int highlight1, int highlight2) {
+    v_clear_screen();
+
+    int max = 0;
+    for (int i = 0; i < n; i++)
+        if (arr[i] > max) max = arr[i];
+
+    for (int row = max; row >= 1; row--) {
+        for (int i = 0; i < n; i++) {
+            if (arr[i] >= row) {
+                if (i == highlight1 || i == highlight2)
+                    printf("\033[31m\u2588\033[0m ");
+                else
+                    printf("\u2588 ");
+            } else {
+                printf("  ");
+            }
+        }
+        printf("\n");
+    }
+
+    for (int i = 0; i < n; i++) {
+        printf("--");
+    }
+    printf("\n");
+
+    for (int i = 0; i < n; i++) {
+        printf("%2d", arr[i]);
+    }
+    printf("\n");
+
+    usleep(VDELAY);
+}
+
+void v_bubble_sort(int arr[], int n) {
+    int temp;
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            v_draw_vertical_bars(arr, n, j, j + 1);
+            if (arr[j] > arr[j + 1]) {
+                temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+                v_draw_vertical_bars(arr, n, j, j + 1);
+            }
+        }
+    }
+    v_draw_vertical_bars(arr, n, -1, -1);
+}
+
+void v_insertion_sort(int arr[], int n) {
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            v_draw_vertical_bars(arr, n, j, j + 1);
+            j--;
+        }
+        arr[j + 1] = key;
+        v_draw_vertical_bars(arr, n, j + 1, i);
+    }
+    v_draw_vertical_bars(arr, n, -1, -1);
+}
+
+void v_selection_sort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int min_idx = i;
+        for (int j = i + 1; j < n; j++) {
+            v_draw_vertical_bars(arr, n, min_idx, j);
+            if (arr[j] < arr[min_idx])
+                min_idx = j;
+        }
+        if (min_idx != i) {
+            int temp = arr[i];
+            arr[i] = arr[min_idx];
+            arr[min_idx] = temp;
+            v_draw_vertical_bars(arr, n, i, min_idx);
+        }
+    }
+    v_draw_vertical_bars(arr, n, -1, -1);
+}
+
+void v_quick_sort(int arr[], int low, int high, int n) {
+    if (low < high) {
+        int pivot = arr[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            v_draw_vertical_bars(arr, n, j, high);
+            if (arr[j] < pivot) {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+                v_draw_vertical_bars(arr, n, i, j);
+            }
+        }
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[high];
+        arr[high] = temp;
+        v_draw_vertical_bars(arr, n, i + 1, high);
+
+        v_quick_sort(arr, low, i, n);
+        v_quick_sort(arr, i + 2, high, n);
+    }
+}
+
+void v_merge(int arr[], int l, int m, int r, int n) {
+    int n1 = m - l + 1;
+    int n2 = r - m;
+    int L[n1], R[n2];
+    for (int i = 0; i < n1; i++) L[i] = arr[l + i];
+    for (int i = 0; i < n2; i++) R[i] = arr[m + 1 + i];
+
+    int i = 0, j = 0, k = l;
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) arr[k++] = L[i++];
+        else arr[k++] = R[j++];
+        v_draw_vertical_bars(arr, n, k - 1, -1);
+    }
+    while (i < n1) arr[k++] = L[i++], v_draw_vertical_bars(arr, n, k - 1, -1);
+    while (j < n2) arr[k++] = R[j++], v_draw_vertical_bars(arr, n, k - 1, -1);
+}
+
+void v_merge_sort(int arr[], int l, int r, int n) {
+    if (l < r) {
+        int m = l + (r - l) / 2;
+        v_merge_sort(arr, l, m, n);
+        v_merge_sort(arr, m + 1, r, n);
+        v_merge(arr, l, m, r, n);
+    }
+}
+
+void v_shuffle_array(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % VMAX_HEIGHT + 1;
+    }
+}
+
+void visual_sort_menu(int arr[], int n) {
+    int vis_arr[VSIZE];
+    int vis_n = n > VSIZE ? VSIZE : n; // Limit to VSIZE for visualization
+
+    // Copy user's array (up to VSIZE elements)
+    for (int i = 0; i < vis_n; i++) {
+        vis_arr[i] = arr[i];
+    }
+
+    printf("\nVisual Sort Algorithms:\n");
+    printf("1. Bubble Sort\n");
+    printf("2. Insertion Sort\n");
+    printf("3. Selection Sort\n");
+    printf("4. Quick Sort\n");
+    printf("5. Merge Sort\n");
+    printf("Choice: ");
+
+    int choice;
+    scanf("%d", &choice);
+
+    v_draw_vertical_bars(vis_arr, vis_n, -1, -1);
+
+    switch (choice) {
+        case 1:
+            v_bubble_sort(vis_arr, vis_n);
+            break;
+        case 2:
+            v_insertion_sort(vis_arr, vis_n);
+            break;
+        case 3:
+            v_selection_sort(vis_arr, vis_n);
+            break;
+        case 4:
+            v_quick_sort(vis_arr, 0, vis_n - 1, vis_n);
+            v_draw_vertical_bars(vis_arr, vis_n, -1, -1);
+            break;
+        case 5:
+            v_merge_sort(vis_arr, 0, vis_n - 1, vis_n);
+            v_draw_vertical_bars(vis_arr, vis_n, -1, -1);
+            break;
+        default:
+            printf("Invalid choice.\n");
+            return;
+    }
+
+    color(7);
+    printf("\nSorted Array:");
+    reset_color();
+    for (int i = 0; i < vis_n; i++) {
+        printf(" %d", vis_arr[i]);
+    }
+    printf("\n\n");
+
+    // Print time complexity AFTER the sorted array
+    switch (choice) {
+        case 1:
+            print_complexity(6, 4, 0); // Bubble Sort
+            break;
+        case 2:
+            print_complexity(6, 4, 0); // Insertion Sort
+            break;
+        case 3:
+            print_complexity(6, 4, 2); // Selection Sort
+            break;
+        case 4:
+            print_complexity(6, 3, 1); // Quick Sort
+            break;
+        case 5:
+            print_complexity(5, 3, 1); // Merge Sort
+            break;
     }
 }
