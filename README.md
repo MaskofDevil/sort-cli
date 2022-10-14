@@ -95,8 +95,11 @@ Visual Sort Algorithms:
 5. Merge Sort
 Choice: 4
 
+```
+
 ![Visualization](./assets/animation.gif)
 
+```
 Sorted Array: 2 3 4 5 7 7 7 9 9 9
 
 Worst Case: O(n^2)    Average Case: Θ(nlogn)    Best Case: Ω(nlogn)
